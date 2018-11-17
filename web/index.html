@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<script src="wasm_exec.js"></script>
+		<script src="main.js"></script>
+		<script>
+			request = new XMLHttpRequest();
+request.open('GET', 'main.wasm');
+request.responseType = 'arraybuffer';
+request.send();
+
+request.onload = function() {
+  var bytes = request.response;
+  const go = new Go();
+  WebAssembly.instantiate(bytes, go.importObject).then(result => {
+    go.run(result.instance);
+  });
+};
+		</script>
+	</head>
+	<body>
+		<input type="file" id="file" name="file" enctype="multipart/form-data"/>
+	</body>
+</html>
