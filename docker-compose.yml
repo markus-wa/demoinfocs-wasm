@@ -1,0 +1,11 @@
+version: '3.3'
+services:
+  web:
+    ports:
+      - "8080:80"
+    build: .
+  e2e:
+    build: e2e
+    security_opt:
+     - seccomp:chrome.json
+    command: sh -c "./wait-for-command.sh -c 'nc -z web 80' && npm test"

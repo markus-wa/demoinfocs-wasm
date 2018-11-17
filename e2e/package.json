@@ -1,0 +1,19 @@
+{
+  "name": "e2e",
+  "version": "1.0.0",
+  "description": "End to end tests for demoinfocs-wasm",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/markus-wa/demoinfocs-wasm.git"
+  },
+  "main": "index.js",
+  "scripts": {
+    "test": "jasmine"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "jasmine": "^3.3.0",
+    "puppeteer": "^1.10.0"
+  }
+}

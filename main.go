@@ -64,6 +64,8 @@ func parseDemo(args []js.Value) {
 
 	err = p.ParseToEnd()
 	checkError(err)
+
+	fmt.Println("Finished")
 }
 
 func checkError(err error) {
