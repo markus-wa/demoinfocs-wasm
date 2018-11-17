@@ -1,15 +1,15 @@
-GO111MODULE=on
-GOARCH=wasm
-GOOS=js
-BINARY_NAME=demoinfocs.wasm
+MAKE?=make
+DOCKER_ID_USER?=markuswa
+DOCKER_IMAGE?=demoinfocs-wasm
+DOCKER_TAG?=latest
+DOCKER_IMAGE_FULL=$(DOCKER_ID_USER)/$(DOCKER_IMAGE):$(DOCKER_TAG)
 
-all: test build docker e2e
-test:
-	go test -v ./...
+all: build e2e-tests
 build:
-	go build -o $(BINARY_NAME)
-docker:
-	docker build . -t demoinfocs-wasm
-e2e:
-	cd e2e
-	npm run test
+	$(MAKE) -C app all
+e2e-tests: build
+	docker-compose build
+	docker-compose up --abort-on-container-exit
+publish:
+	docker tag $(DOCKER_IMAGE) $(DOCKER_IMAGE_FULL)
+	docker push $(DOCKER_IMAGE_FULL)

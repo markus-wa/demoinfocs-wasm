@@ -3,9 +3,11 @@ services:
   web:
     ports:
       - "8080:80"
-    build: .
+    build: app
+    image: demoinfocs-wasm-app
   e2e:
     build: e2e
+    image: demoinfocs-wasm-e2e
     security_opt:
-     - seccomp:chrome.json
+     - seccomp:security-opts-chrome.json
     command: sh -c "./wait-for-command.sh -c 'nc -z web 80' && npm test"
