@@ -18,7 +18,7 @@ describe('WSM Parsing', () => {
   });
 
   it('should parse the demo', async () => {
-    const filePath = path.relative(process.cwd(), __dirname + '/default.dem');
+    const filePath = path.relative(process.cwd(), '../default.dem');
     const input = await page.$('input[type="file"]');
     await input.uploadFile(filePath);
     expect(await page.evaluate(e => e.files[0].name, input)).toBe('default.dem');

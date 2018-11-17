@@ -1,4 +1,18 @@
-FROM nginx:mainline-alpine
+FROM golang:1.11-alpine
 
-COPY web /usr/share/nginx/html
-COPY demoinfocs.wasm /usr/share/nginx/html
+ENV GOARCH wasm
+ENV GOOS js
+ENV PATH "$PATH:/usr/local/go/misc/wasm"
+
+RUN apk update && apk upgrade && \
+    apk add --no-cache \
+      bash \
+      git \
+      nodejs \
+      nodejs-npm
+
+WORKDIR /usr/src/app
+
+COPY go.* ./
+
+RUN go mod download

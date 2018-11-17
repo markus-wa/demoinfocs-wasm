@@ -1,9 +1,12 @@
 package main
 
 import (
-	"bytes"
+	"crypto/md5"
 	"encoding/base64"
+	"encoding/hex"
+	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"syscall/js"
 
@@ -19,6 +22,10 @@ const (
 func main() {
 	c := make(chan struct{}, 0)
 
+	dem.DefaultParserConfig = dem.ParserConfig{
+		MsgQueueBufferSize: msgQueueBufferSize,
+	}
+
 	registerCallbacks()
 
 	fmt.Println("WASM Go Initialized")
@@ -27,26 +34,44 @@ func main() {
 }
 
 func registerCallbacks() {
-	js.Global().Set("writeDataAsString", js.NewCallback(writeDataAsString))
-	js.Global().Set("parseDemo", js.NewCallback(parseDemo))
+	js.Global().Set("newParser", js.NewCallback(newParser))
 }
 
-var data []byte
+// TODO: buffer reader/writer?
 
-func writeDataAsString(str []js.Value) {
-	b, err := base64.StdEncoding.DecodeString(str[0].String())
+type parser struct {
+	reader io.ReadCloser
+	writer io.WriteCloser
+}
+
+func md5hex(b []byte) string {
+	x := md5.Sum(b)
+	return hex.EncodeToString(x[:])
+}
+
+func (p *parser) write(b64 string) {
+	b, err := base64.StdEncoding.DecodeString(b64)
 	checkError(err)
-	data = append(data, b...)
+
+	n, err := p.writer.Write(b)
+	// It's fine if there's no reader and we can't write
+	if n < len(b) && err != io.ErrClosedPipe {
+		checkError(err)
+	}
 }
 
-func parseDemo(args []js.Value) {
-	r := bytes.NewReader(data)
-	cfg := dem.ParserConfig{
-		MsgQueueBufferSize: msgQueueBufferSize,
-	}
-	p := dem.NewParserWithConfig(r, cfg)
+func (p *parser) parse(callback js.Value) {
+	defer p.reader.Close()
+	parser := dem.NewParser(p.reader)
 
-	p.RegisterEventHandler(func(e events.Kill) {
+	var kills []map[string]string
+	parser.RegisterEventHandler(func(e events.Kill) {
+		kills = append(kills, map[string]string{
+			"killer": e.Killer.Name,
+			"weapon": e.Weapon.Weapon.String(),
+			"victim": e.Victim.Name,
+		})
+
 		var hs string
 		if e.IsHeadshot {
 			hs = " (HS)"
@@ -58,14 +83,45 @@ func parseDemo(args []js.Value) {
 		fmt.Printf("%s <%s%s%s> %s\n", e.Killer.Name, e.Weapon.Weapon, hs, wallBang, e.Victim.Name)
 	})
 
-	header, err := p.ParseHeader()
+	header, err := parser.ParseHeader()
 	checkError(err)
-	fmt.Println("Header:", header)
+	// TODO: report headerpointer error
+	//fmt.Println("Header:", header)
+	fmt.Println("Map: " + header.MapName)
 
-	err = p.ParseToEnd()
+	err = parser.ParseToEnd()
 	checkError(err)
 
-	fmt.Println("Finished")
+	fmt.Println("Parsed")
+
+	b, err := json.Marshal(kills)
+	checkError(err)
+
+	// Return result to JS
+	callback.Invoke(string(b))
+}
+
+func newParser(args []js.Value) {
+	r, w := io.Pipe()
+	p := &parser{
+		reader: r,
+		writer: w, //bufio.NewWriterSize(w, 1024*2048),
+	}
+
+	m := map[string]interface{}{
+		"write": js.NewCallback(func(args []js.Value) {
+			p.write(args[0].String())
+		}),
+		"close": js.NewCallback(func(args []js.Value) {
+			w.Close()
+		}),
+		"parse": js.NewCallback(func(args []js.Value) {
+			go p.parse(args[0])
+		}),
+	}
+
+	// Callback to signal that creation finished, ready to receive data
+	args[0].Invoke(m)
 }
 
 func checkError(err error) {

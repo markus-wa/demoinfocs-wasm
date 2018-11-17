@@ -3,7 +3,7 @@ services:
   web:
     ports:
       - "8080:80"
-    build: app
+    build: app/web
     image: demoinfocs-wasm-app
   e2e:
     build: e2e

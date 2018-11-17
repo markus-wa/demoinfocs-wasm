@@ -14,6 +14,8 @@ github.com/markus-wa/demoinfocs-golang v1.0.0 h1:606BDkZLqHe3O6zoclj2GPzYvRnz7BK
 github.com/markus-wa/demoinfocs-golang v1.0.0/go.mod h1:HJP/GO0sU1ZdOo6uavCiI5nt6VceothI8hfOc/dQx/M=
 github.com/markus-wa/gobitread v0.2.1 h1:tINORxAv9XyBR5Nm2XWh+e5YLe7IWoR7xHjVrBn4I0g=
 github.com/markus-wa/gobitread v0.2.1/go.mod h1:PcWXMH4gx7o2CKslbkFkLyJB/aHW7JVRG3MRZe3PINg=
+github.com/markus-wa/gobitread v0.2.2-0.20181118103818-ab2e1b3f3d6f h1:b32zS0VLDeZmQoH29jU2o+WYZNIrzRPbGolBmrOaEx0=
+github.com/markus-wa/gobitread v0.2.2-0.20181118103818-ab2e1b3f3d6f/go.mod h1:PcWXMH4gx7o2CKslbkFkLyJB/aHW7JVRG3MRZe3PINg=
 github.com/markus-wa/godispatch v1.1.0 h1:J8O+hRkOCexDUQevaSKWDtKeZ3+HcmbEUKY1uYraAjY=
 github.com/markus-wa/godispatch v1.1.0/go.mod h1:6o18u24oo58yseMXYD0zQFI6LbSkjJSSBQ4YyDqFX5c=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=

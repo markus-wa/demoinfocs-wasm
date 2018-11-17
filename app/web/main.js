@@ -14,20 +14,25 @@ request.onload = function() {
 const demoBufferSize = 1024 * 2048; // 2 MB
 
 function parse() {
-	const reader = new FileReader();
-	reader.onload = function() {
-		console.log("Reading")
-		const data = reader.result;
-		for (offset = 0; offset < data.byteLength; offset += demoBufferSize) {
-			const arr = readDataIntoBuffer(data, offset)
-			let base64 = btoa(arr.reduce((data, byte) => (data.push(String.fromCharCode(byte)), data), []).join(''))
-			writeDataAsString(base64);
-		}
+	console.log("Creating parser")
+	newParser((parser) => {
+		console.log("Parser created")
+		parser.parse((kills) => {
+			console.log(kills);
+		});
 
-		console.log("Parsing")
-		parseDemo()
-	}
-	reader.readAsArrayBuffer(document.getElementById('demofile').files[0])
+		const reader = new FileReader();
+		reader.onload = function() {
+			const data = reader.result;
+			for (offset = 0; offset < data.byteLength; offset += demoBufferSize) {
+				const arr = readDataIntoBuffer(data, offset)
+				let base64 = btoa(arr.reduce((data, byte) => (data.push(String.fromCharCode(byte)), data), []).join(''))
+				parser.write(base64);
+			}
+			parser.close()
+		}
+		reader.readAsArrayBuffer(document.getElementById('demofile').files[0])
+	})
 }
 
 function readDataIntoBuffer(data, offset) {
