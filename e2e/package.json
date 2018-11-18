@@ -13,7 +13,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "is-docker": "^1.1.0",
     "jasmine": "^3.3.0",
+    "pixelmatch": "^4.0.2",
     "puppeteer": "^1.10.0"
   }
 }

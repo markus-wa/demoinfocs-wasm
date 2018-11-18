@@ -1,4 +1,4 @@
-version: '3.3'
+version: '3.7'
 services:
   web:
     ports:
@@ -9,5 +9,11 @@ services:
     build: e2e
     image: demoinfocs-wasm-e2e
     security_opt:
-     - seccomp:security-opts-chrome.json
+      - seccomp:security-opts-chrome.json
+    volumes:
+      - type: bind
+        source: ./default.dem
+        target: /home/pptruser/default.dem
+    environment:
+      TEST_ENDPOINT: http://web:80
     command: sh -c "./wait-for-command.sh -c 'nc -z web 80' && npm test"
