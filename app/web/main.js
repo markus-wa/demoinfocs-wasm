@@ -1,24 +1,17 @@
-request = new XMLHttpRequest();
-request.open('GET', 'demoinfocs.wasm');
-request.responseType = 'arraybuffer';
-request.send();
-
-request.onload = function() {
-	var bytes = request.response;
-	const go = new Go();
-	WebAssembly.instantiate(bytes, go.importObject).then(result => {
-		go.run(result.instance);
-	});
-};
+const go = new Go();
+WebAssembly.instantiateStreaming(fetch("demoinfocs.wasm"), go.importObject).then((result) => {
+	go.run(result.instance);
+});
 
 const demoBufferSize = 1024 * 2048; // 2 MB
 
 function parse() {
-	console.log("Creating parser")
+	state("Creating parser")
 	newParser((parser) => {
-		console.log("Parser created")
-		parser.parse((kills) => {
-			console.log(kills);
+		state("Parsing")
+		parser.parse((stats) => {
+			state("Done")
+			displayStats(JSON.parse(stats));
 		});
 
 		const reader = new FileReader();
@@ -40,4 +33,26 @@ function readDataIntoBuffer(data, offset) {
 		return new Uint8Array(data, offset, demoBufferSize);
 	}
 	return new Uint8Array(data, offset, data.byteLength-offset);
+}
+
+function state(state) {
+	document.getElementById('state').innerText = state;
+}
+
+function displayStats(stats) {
+	const table = document.getElementById('stats');
+	stats.forEach(p => {
+		const row = document.createElement('tr');
+		row.appendChild(td(p.name));
+		row.appendChild(td(p.kills));
+		row.appendChild(td(p.deaths));
+		row.appendChild(td(p.assists));
+		table.appendChild(row);
+	});
+}
+
+function td(val) {
+	const td = document.createElement('td');
+	td.innerText = val;
+	return td;
 }

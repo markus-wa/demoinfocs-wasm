@@ -11,7 +11,7 @@ import (
 	"syscall/js"
 
 	dem "github.com/markus-wa/demoinfocs-golang"
-	events "github.com/markus-wa/demoinfocs-golang/events"
+	common "github.com/markus-wa/demoinfocs-golang/common"
 )
 
 const (
@@ -64,25 +64,6 @@ func (p *parser) parse(callback js.Value) {
 	defer p.reader.Close()
 	parser := dem.NewParser(p.reader)
 
-	var kills []map[string]string
-	parser.RegisterEventHandler(func(e events.Kill) {
-		kills = append(kills, map[string]string{
-			"killer": e.Killer.Name,
-			"weapon": e.Weapon.Weapon.String(),
-			"victim": e.Victim.Name,
-		})
-
-		var hs string
-		if e.IsHeadshot {
-			hs = " (HS)"
-		}
-		var wallBang string
-		if e.PenetratedObjects > 0 {
-			wallBang = " (WB)"
-		}
-		fmt.Printf("%s <%s%s%s> %s\n", e.Killer.Name, e.Weapon.Weapon, hs, wallBang, e.Victim.Name)
-	})
-
 	header, err := parser.ParseHeader()
 	checkError(err)
 	// TODO: report headerpointer error
@@ -94,18 +75,40 @@ func (p *parser) parse(callback js.Value) {
 
 	fmt.Println("Parsed")
 
-	b, err := json.Marshal(kills)
+	players := parser.GameState().Participants().Playing()
+	var stats []playerStats
+	for _, p := range players {
+		stats = append(stats, statsFor(p))
+	}
+
+	b, err := json.Marshal(stats)
 	checkError(err)
 
 	// Return result to JS
 	callback.Invoke(string(b))
 }
 
+type playerStats struct {
+	Name    string `json:"name"`
+	Kills   int    `json:"kills"`
+	Deaths  int    `json:"deaths"`
+	Assists int    `json:"assists"`
+}
+
+func statsFor(p *common.Player) playerStats {
+	return playerStats{
+		Name:    p.Name,
+		Kills:   p.AdditionalPlayerInformation.Kills,
+		Deaths:  p.AdditionalPlayerInformation.Deaths,
+		Assists: p.AdditionalPlayerInformation.Assists,
+	}
+}
+
 func newParser(args []js.Value) {
 	r, w := io.Pipe()
 	p := &parser{
 		reader: r,
-		writer: w, //bufio.NewWriterSize(w, 1024*2048),
+		writer: w,
 	}
 
 	m := map[string]interface{}{

@@ -4,9 +4,22 @@
 		<meta charset="utf-8">
 		<script src="wasm_exec.js"></script>
 		<script src="main.js"></script>
+		<link rel="stylesheet" type="text/css" href="style.css">
 	</head>
 	<body>
 		<input type="file" id="demofile" name="file" enctype="multipart/form-data"/>
 		<button onclick="parse()">Parse</button>
+		<br>
+		<p>State: <span id="state"></span></p>
+		<table>
+			<thead>
+				<th>Player</th>
+				<th>Kills</th>
+				<th>Deahs</th>
+				<th>Assists</th>
+			</thead>
+			<tbody id="stats">
+			</tbody>
+		</table>
 	</body>
 </html>
