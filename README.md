@@ -8,7 +8,7 @@ To run the example you need [`docker`](https://www.docker.com/get-started), [`do
 
 ## Running the example
 
-1. Execute `make run`
-   This builds and start a [NGINX](https://nginx.org/en/) docker container with a webapp that can parse player stats from a CS:GO demo.
+1. Execute `make run`<br>
+   This builds and starts an [NGINX](https://nginx.org/en/) docker container with a webapp that can parse player stats from a CS:GO demo.
 
 2. Go to `http://localhost:8080` to see the demo app.
