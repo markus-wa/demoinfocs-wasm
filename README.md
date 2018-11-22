@@ -1,6 +1,6 @@
 # demoinfocs-wasm example
 
-This repo demonstrates how [demoinfocs-golang](https://github.com/markus-wa/demoinfocs-golang) can be used with [WebAssembly](https://webassembly.org/) (WASM).
+This repo demonstrates how [demoinfocs-golang](https://github.com/markus-wa/demoinfocs-golang) can be used from JavaScript with [WebAssembly](https://webassembly.org/) (WASM).
 
 ## Prerequisites
 
