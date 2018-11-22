@@ -1,0 +1,14 @@
+image: docker:stable
+
+services:
+  - docker:dind
+
+before_script:
+  - apk add --no-cache git git-lfs make py-pip
+  - pip install docker-compose
+  - git lfs pull -I '*'
+
+build:
+  stage: build
+  script:
+    - make

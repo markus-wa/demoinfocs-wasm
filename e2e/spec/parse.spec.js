@@ -20,7 +20,7 @@ describe('WSAM Parsing', () => {
 
   beforeEach(async () => {
     originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000;
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 120000;
 
     browser = await puppeteer.launch(isDocker() ? {
       executablePath: '/usr/bin/chromium-browser'
@@ -51,7 +51,7 @@ describe('WSAM Parsing', () => {
 
     // Wait until WASM initialization is complete
     const state = await page.$('span[id="state"]');
-    await page.waitFor(state => state.innerText === 'ready', { timeout: 10000 }, state);
+    await page.waitFor(state => state.innerText === 'ready', { timeout: 30000 }, state);
 
     // Click 'Parse' button
     await page.waitForSelector('#btnParse');
@@ -61,7 +61,7 @@ describe('WSAM Parsing', () => {
     });
 
     // Wait until parsing finished
-    await page.waitFor(state => state.innerText === 'done', { timeout: 30000 }, state);
+    await page.waitFor(state => state.innerText === 'done', { timeout: 60000 }, state);
 
     await takeAndCompareScreenshot(page, 'stats')
   });

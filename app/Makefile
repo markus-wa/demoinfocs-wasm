@@ -2,7 +2,7 @@ export GO111MODULE=on
 export GOARCH=wasm
 export GOOS=js
 export MSYS_NO_PATHCONV=1
-GO=docker run -it --rm -v "$(shell pwd)/../default.dem":/usr/src/default.dem -v "$(shell pwd)":/usr/src/app -w /usr/src/app demoinfocs-wasm-go go
+GO=docker run --rm -v "$(shell pwd)/../default.dem":/usr/src/default.dem -v "$(shell pwd)":/usr/src/app -w /usr/src/app demoinfocs-wasm-go go
 BINARY_NAME=demoinfocs.wasm
 DOCKER_IMAGE?=demoinfocs-wasm
 
