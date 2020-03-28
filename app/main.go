@@ -1,12 +1,9 @@
 package main
 
 import (
-	"crypto/md5"
-	"encoding/base64"
-	"encoding/hex"
+	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
 	"log"
 	"syscall/js"
 
@@ -34,46 +31,34 @@ func main() {
 }
 
 func registerCallbacks() {
-	js.Global().Set("newParser", js.NewCallback(newParser))
+	js.Global().Set("parse", js.FuncOf(parse))
 }
 
-// TODO: buffer reader/writer?
-
-type parser struct {
-	reader io.ReadCloser
-	writer io.WriteCloser
+func uint8ArrayToBytes(value js.Value) []byte {
+	s := make([]byte, value.Get("byteLength").Int())
+	js.CopyBytesToGo(s, value)
+	return s
 }
 
-func md5hex(b []byte) string {
-	x := md5.Sum(b)
-	return hex.EncodeToString(x[:])
+func parse(this js.Value, args []js.Value) interface{} {
+	parseInternal(args[0], args[1])
+	return nil
 }
 
-func (p *parser) write(b64 string) {
-	b, err := base64.StdEncoding.DecodeString(b64)
-	checkError(err)
-
-	n, err := p.writer.Write(b)
-	// It's fine if there's no reader and we can't write
-	if n < len(b) && err != io.ErrClosedPipe {
-		checkError(err)
-	}
-}
-
-func (p *parser) parse(callback js.Value) {
-	defer p.reader.Close()
-	parser := dem.NewParser(p.reader)
+func parseInternal(data js.Value, callback js.Value) {
+	b := bytes.NewBuffer(uint8ArrayToBytes(data))
+	parser := dem.NewParser(b)
 
 	header, err := parser.ParseHeader()
 	checkError(err)
 	// TODO: report headerpointer error
 	//fmt.Println("Header:", header)
-	fmt.Println("Map: " + header.MapName)
+	fmt.Println("map: " + header.MapName)
 
 	err = parser.ParseToEnd()
 	checkError(err)
 
-	fmt.Println("Parsed")
+	fmt.Println("parsed")
 
 	players := parser.GameState().Participants().Playing()
 	var stats []playerStats
@@ -81,11 +66,11 @@ func (p *parser) parse(callback js.Value) {
 		stats = append(stats, statsFor(p))
 	}
 
-	b, err := json.Marshal(stats)
+	bStats, err := json.Marshal(stats)
 	checkError(err)
 
 	// Return result to JS
-	callback.Invoke(string(b))
+	callback.Invoke(string(bStats))
 }
 
 type playerStats struct {
@@ -102,29 +87,6 @@ func statsFor(p *common.Player) playerStats {
 		Deaths:  p.AdditionalPlayerInformation.Deaths,
 		Assists: p.AdditionalPlayerInformation.Assists,
 	}
-}
-
-func newParser(args []js.Value) {
-	r, w := io.Pipe()
-	p := &parser{
-		reader: r,
-		writer: w,
-	}
-
-	m := map[string]interface{}{
-		"write": js.NewCallback(func(args []js.Value) {
-			p.write(args[0].String())
-		}),
-		"close": js.NewCallback(func(args []js.Value) {
-			w.Close()
-		}),
-		"parse": js.NewCallback(func(args []js.Value) {
-			go p.parse(args[0])
-		}),
-	}
-
-	// Callback to signal that creation finished, ready to receive data
-	args[0].Invoke(m)
 }
 
 func checkError(err error) {
