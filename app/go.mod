@@ -6,3 +6,5 @@ require (
 	github.com/markus-wa/demoinfocs-golang v1.0.0-beta.4.0.20181118121655-330ee1f77e97
 	github.com/stretchr/testify v1.2.2
 )
+
+go 1.14
