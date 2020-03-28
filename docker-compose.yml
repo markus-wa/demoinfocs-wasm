@@ -13,7 +13,7 @@ services:
     volumes:
       - type: bind
         source: ./default.dem
-        target: /home/pptruser/default.dem
+        target: /home/pptr/default.dem
     environment:
       TEST_ENDPOINT: http://web:80
     command: sh -c "./wait-for-command.sh -c 'nc -z web 80' && npm test"
