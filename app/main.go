@@ -7,8 +7,8 @@ import (
 	"log"
 	"syscall/js"
 
-	dem "github.com/markus-wa/demoinfocs-golang"
-	common "github.com/markus-wa/demoinfocs-golang/common"
+	dem "github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs"
+	common "github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs/common"
 )
 
 const (
@@ -83,9 +83,9 @@ type playerStats struct {
 func statsFor(p *common.Player) playerStats {
 	return playerStats{
 		Name:    p.Name,
-		Kills:   p.AdditionalPlayerInformation.Kills,
-		Deaths:  p.AdditionalPlayerInformation.Deaths,
-		Assists: p.AdditionalPlayerInformation.Assists,
+		Kills:   p.Kills(),
+		Deaths:  p.Deaths(),
+		Assists: p.Assists(),
 	}
 }
 
