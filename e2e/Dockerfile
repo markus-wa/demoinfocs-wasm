@@ -3,7 +3,7 @@ FROM node:10-alpine
 # Installs latest Chromium package.
 RUN apk update && apk upgrade && \
     apk add --no-cache \
-      chromium=79.0.3945.130-r0 \
+      chromium=81.0.4044.113-r0 \
       nss
 
 # Tell Puppeteer to skip installing Chrome. We'll be using the installed package.
