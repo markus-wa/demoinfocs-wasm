@@ -1,4 +1,4 @@
-FROM node:16.15.0-alpine
+FROM node:16.16.0-bullseye-slim
 
 # Installs latest Chromium package.
 RUN apk update && apk upgrade && \
