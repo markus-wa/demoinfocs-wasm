@@ -14,7 +14,7 @@
   "license": "ISC",
   "dependencies": {
     "is-docker": "^2.0.0",
-    "jasmine": "^3.5.0",
+    "jasmine": "^3.99.0",
     "pixelmatch": "^5.1.0",
     "puppeteer": "^2.1.1"
   }
