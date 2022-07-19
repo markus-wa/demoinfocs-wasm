@@ -1,4 +1,4 @@
-FROM nginx:mainline-alpine
+FROM nginx:1-alpine
 
 RUN echo $'\n\
 types {\n\
