@@ -9,7 +9,7 @@ RUN apk update && apk upgrade && \
       bash \
       git \
       nodejs \
-      nodejs-npm
+      npm
 
 WORKDIR /usr/src/app
 
