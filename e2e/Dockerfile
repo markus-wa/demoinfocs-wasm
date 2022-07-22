@@ -1,9 +1,9 @@
-FROM node:16.16.0-bullseye-slim
+FROM node:16.16-alpine3.16
 
 # Installs latest Chromium package.
 RUN apk update && apk upgrade && \
     apk add --no-cache \
-      chromium=81.0.4044.113-r0 \
+    chromium=102.0.5005.158-r0 \
       nss
 
 # Tell Puppeteer to skip installing Chrome. We'll be using the installed package.

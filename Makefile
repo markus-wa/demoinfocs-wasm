@@ -8,8 +8,8 @@ all: build e2e-tests
 build:
 	$(MAKE) -C app all
 e2e-tests:
-	docker-compose build
-	docker-compose up --abort-on-container-exit
+	docker compose build
+	docker compose up --abort-on-container-exit
 run:
 	$(MAKE) -C app run
 publish:
