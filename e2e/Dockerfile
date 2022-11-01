@@ -1,4 +1,4 @@
-FROM node:16.16-alpine3.16
+FROM node:16.17.1-alpine3.16
 
 # Installs latest Chromium package.
 RUN apk update && apk upgrade && \
